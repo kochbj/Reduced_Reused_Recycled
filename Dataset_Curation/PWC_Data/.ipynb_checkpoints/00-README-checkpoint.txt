@@ -1,0 +1,1 @@
+evaluation-tables.json and papers-with-abstracts.json were downloaded from [PWC's Github](https://github.com/paperswithcode/paperswithcode-data) on 06/16/2021.
