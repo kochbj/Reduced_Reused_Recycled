@@ -1,0 +1,134 @@
+,task
+1,2D Object Detection
+6,3D Face Reconstruction
+8,3D Human Pose Estimation
+10,3D Object Detection
+11,3D Reconstruction
+12,3D Scene Reconstruction
+13,3D Semantic Segmentation
+15,6D Pose Estimation
+19,Action Classification
+20,Action Detection
+23,Action Recognition
+24,Action Segmentation
+26,Activity Recognition
+28,Anomaly Detection
+30,Atari Games
+32,AutoML
+33,Autonomous Driving
+35,Autonomous Vehicles
+47,Computed Tomography (CT)
+48,Continuous Control
+49,Coreference Resolution
+51,Cross-Lingual Transfer
+54,Deblurring
+56,Density Estimation
+57,Depth Estimation
+60,Document Classification
+62,Domain Adaptation
+64,Emotion Recognition
+65,Face Detection
+66,Face Generation
+67,Face Recognition
+68,Face Reconstruction
+69,Face Verification
+70,Facial Expression Recognition
+71,Facial Landmark Detection
+72,Facial Recognition and Modelling
+74,Few-Shot Image Classification
+75,Few-Shot Learning
+76,Few-Shot Transfer Learning for Saliency Prediction
+77,Fine-Grained Image Classification
+80,Grammatical Error Correction
+84,Hand Gesture Recognition
+92,Image Captioning
+93,Image Classification
+94,Image Denoising
+96,Image Generation
+101,Image Retrieval
+102,Image Super-Resolution
+104,Image-to-Image Translation
+105,Imitation Learning
+106,Information Retrieval
+107,Instance Segmentation
+109,Keyword Spotting
+110,Knowledge Graph Completion
+111,Knowledge Graph Embedding
+112,Knowledge Graphs
+114,Language Modelling
+115,Link Prediction
+117,Long-tail Learning
+118,Machine Translation
+120,Medical Image Segmentation
+121,Meta-Learning
+123,Motion Capture
+125,Multi-Object Tracking
+129,Named Entity Recognition
+130,Natural Language Inference
+131,Node Classification
+132,Object Detection
+133,Object Localization
+134,Object Recognition
+135,Object Tracking
+137,OpenAI Gym
+138,Optical Character Recognition
+139,Optical Flow Estimation
+140,Outlier Detection
+141,Part-Of-Speech Tagging
+143,Person Re-Identification
+144,Pose Estimation
+148,Quantization
+149,Question Answering
+150,RGB Salient Object Detection
+152,Reading Comprehension
+154,Recommendation Systems
+156,Relation Extraction
+158,Saliency Detection
+159,Saliency Prediction
+160,Scene Parsing
+163,Scene Understanding
+165,Semantic Parsing
+166,Semantic Role Labeling
+167,Semantic Segmentation
+168,Semantic Textual Similarity
+174,Sentiment Analysis
+178,Speaker Verification
+179,Speech Enhancement
+180,Speech Recognition
+185,Stochastic Optimization
+189,Temporal Action Localization
+191,Text Classification
+192,Text Generation
+194,Text Summarization
+195,Text-to-Image Generation
+199,Trajectory Prediction
+200,Transfer Learning
+202,Unsupervised Anomaly Detection
+203,Unsupervised Image-To-Image Translation
+205,Video Captioning
+206,Video Classification
+207,Video Frame Interpolation
+208,Video Object Segmentation
+209,Video Prediction
+210,Video Retrieval
+211,Video Semantic Segmentation
+212,Video Summarization
+213,Video Understanding
+214,Visual Odometry
+215,Visual Question Answering
+216,Visual Reasoning
+218,Visual Tracking
+219,Word Embeddings
+220,Word Sense Disambiguation
+221,Zero-Shot Learning
+229,Adversarial Attack
+230,Adversarial Defense
+236,Constituency Parsing
+238,Continual Learning
+239,Cross-Domain Few-Shot
+240,Dependency Parsing
+248,Image Clustering
+249,Image Compression
+250,Image Inpainting
+260,Small Object Detection
+266,Video Generation

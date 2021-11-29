@@ -4,20 +4,27 @@ library(DHARMa)
 library(MuMIn)
 library(emmeans)
 library(gridExtra)
+setwd("C:/Users/berna/Documents/Github/Life_of_a_Benchmark")
 
+#This is the data for each task aggregated across all years.
+#See the section of the dataset curation file for RQ2 to see how this is created.
+#fdata<-read_tsv('./Dataset_Curation/PWC_Data/Derivative_Datasets/FullDatasetforR.ParentsandChildren.AllYears.txt')
+fdata<-read_tsv('./Dataset_Curation/PWC_Data/Derivative_Datasets/FullDatasetforR.ParentsOnly.AllYears.txt')
 
-fdata<-read_tsv('./GoogleDataProject/RatioInputs/FullDatasetforR.ParentsOnly.AllYears.txt')
 fdata$CV<-as.factor(fdata$CV)
 fdata$NLP<-as.factor(fdata$NLP)
-fdata$cvmethods<-as.factor(fdata$cvmethods)
-fdata$Methods<-as.factor(fdata$cvmethods)
+fdata$Methods<-as.factor(fdata$Methodology)
 
-cdata<-read_tsv('./GoogleDataProject/RatioInputs/FullDatasetforR.ParentsOnly.txt')
+#This is the data for each task disaggregated across all years.
+#Note that we drop task-years with fewer than 10 papers published and focus on 2015-2020.
+cdata<-read_tsv('./Dataset_Curation/PWC_Data/Derivative_Datasets/FullDatasetforR.ParentsOnly.txt')
+cdata<-read_tsv('./Dataset_Curation/PWC_Data/Derivative_Datasets/FullDatasetforR.ParentsOnly.AllYears.NotMedians.txt')
+
 cdata$creation_ratio<-as.numeric(cdata$creation_ratio)
 cdata$clusters<-as.factor(cdata$task)
-cdata<-cdata %>% filter(year<2021) %>% filter(year>2010)
+cdata<-cdata %>% filter(year<2021) %>% filter(year>2014)
 cdata$date<-cdata$year-min(cdata$year)
-cdata<-cdata %>% filter(size>=5) 
+cdata<-cdata %>% filter(size>=10) 
 cdata$task_age<-scale(cdata$task_age,center=T,scale=F)
 cdata$full_size<-scale(cdata$pwc_size,center=T,scale=T)
 cdata$task_size<-scale(cdata$size,center=T,scale=F)
@@ -25,23 +32,29 @@ cdata$CV<-as.factor(cdata$CV)
 cdata$NLP<-as.factor(cdata$NLP)
 cdata$Methods<-as.factor(cdata$Methodology)
 
+pwc_size_resid<-resid(lm(log(pwc_size)~date,distinct(cdata[c("date","pwc_size")])))
+pwc_size_resid<-cbind(pwc_size_resid,distinct(cdata['date']))
+cdata<-merge(cdata,pwc_size_resid,by='date')
 
-# 
-# creation_ratio_full<-glmmTMB(creatRatio ~ full_size+date*task_size*task_age+CV*date+NLP*date+cvmethods*date+(1|clusters),data=cdata,family='binomial')
-# creation_ratio_1<-glmmTMB(creatRatio ~ date+task_size+task_age,data=cdata,family='binomial')
-# creation_ratio_2<-glmmTMB(creatRatio ~ date*task_size*task_age,data=cdata,family='binomial')
-# creation_ratio_3<-glmmTMB(creatRatio ~ full_size+date*task_size*task_age,data=cdata,family='binomial')
-# creation_ratio_4<-glmmTMB(creatRatio ~ full_size+date+task_size+task_age,data=cdata,family='binomial')
-# creation_ratio_5<-glmmTMB(creatRatio ~ full_size+date+task_size,data=cdata,family='binomial')
-# creation_ratio_6<-glmmTMB(creatRatio ~ date+task_size,data=cdata,family='binomial')
-# creation_ratio_7<-glmmTMB(creatRatio ~ date+full_size,data=cdata,family='binomial')
 # 
 # model.sel(creation_ratio_full,creation_ratio_full0,creation_ratio_1,creation_ratio_2,creation_ratio_3,
 #           creation_ratio_4,creation_ratio_5,creation_ratio_6,creation_ratio_7)
 # 
 
+adopRatio<-cbind(cdata$num_papers_adopting,cdata$num_papers_growing+cdata$num_papers_adopting)
+adoption_ratio_full<-glmmTMB(adopRatio ~ pwc_size_resid+date*task_size*task_age+CV*date+NLP*date+Methodology*date+(1|clusters),data=cdata,family='binomial')
 
+creatRatio<-cbind(cdata$num_dataset_births,cdata$num_dataset_imports+cdata$num_dataset_births)
+creation_ratio_full<-glmmTMB(creatRatio ~ pwc_size_resid+date*task_size*task_age+CV*date+NLP*date+Methods*date+(1|clusters),data=cdata,family='binomial')
+creation_ratio_1<-glmmTMB(creatRatio ~ pwc_size_resid+date*task_size+date*task_age+CV*date+NLP*date+Methods*date+(1|clusters),data=cdata,family='binomial')
 
+creation_ratio_1<-glmmTMB(creatRatio ~ pwc_size_resid+date+task_size+task_age,data=cdata,family='binomial')
+creation_ratio_2<-glmmTMB(creatRatio ~ pwc_size_resid+date*task_size*task_age,data=cdata,family='binomial')
+creation_ratio_3<-glmmTMB(creatRatio ~ pwc_size_resid+date*task_sizetask_age,data=cdata,family='binomial')
+creation_ratio_4<-glmmTMB(creatRatio ~ pwc_size_resid+date+task_size+task_age,data=cdata,family='binomial')
+creation_ratio_5<-glmmTMB(creatRatio ~ pwc_size_resid+date+task_size,data=cdata,family='binomial')
+creation_ratio_6<-glmmTMB(creatRatio ~ date+task_size,data=cdata,family='binomial')
+creation_ratio_7<-glmmTMB(creatRatio ~ date+pwc_size_resid,data=cdata,family='binomial')
 
 plot(density(fdata$adoption_pct,na.rm=T))
 adoption.aggregated<-ggplot(data=fdata,aes(x=factor(0),y=adoption_pct))+
@@ -61,8 +74,12 @@ adoption.aggregated<-ggplot(data=fdata,aes(x=factor(0),y=adoption_pct))+
   stat_summary(data=fdata %>% filter(Methods==1),aes(x=factor(3),y=adoption_pct),
                fun=median, geom="point", size=2, color="red") +
   scale_x_discrete(labels= c("Full Dataset","Computer Vision","Natural Language Processing","Methods"))+
-  labs(y="Adoption Ratio\n(% Papers Using Imported Datasets)",x="")+
-  guides(color = "none",alpha='none',fill='none')
+  labs(y="Adoption Proportion\n(% Papers Using Imported Datasets)",x="")+
+  guides(color = "none",alpha='none',fill='none')+
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text=element_text(size=16),
+        axis.text.x=element_text(size=18,face="bold"),
+        axis.title=element_text(size=18,face="bold"))
 
 ggplot(data=fdata,aes(x=size,y=adoption_pct))+
 geom_point()+
@@ -88,8 +105,12 @@ creation.aggregated<-ggplot(data=fdata,aes(x=factor(0),y=creation_pct))+
   stat_summary(data=fdata %>% filter(Methods==1),aes(x=factor(3),y=creation_pct),
                fun=median, geom="point", size=2, color="red") +
   scale_x_discrete(labels= c("Full Dataset","Computer Vision","Natural Language Processing","Methods"))+
-  labs(y="Creation Ratio\n(% Papers Using Imported Datasets)",x="")+
-  guides(color = "none",alpha='none',fill='none')
+  labs(y="Creation Proportion\n(% Papers Using Imported Datasets)",x="")+
+  guides(color = "none",alpha='none',fill='none')+
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text=element_text(size=16),
+        axis.text.x=element_text(size=18,face="bold"),
+        axis.title=element_text(size=18,face="bold"))
 
 ggplot(data=fdata,aes(x=size,y=creation_pct))+
   geom_point()+
@@ -100,8 +121,8 @@ cor.test(fdata$size,fdata$creation_pct,method = 'spearman')
 
 
 ratios_final<-grid.arrange(adoption.aggregated,creation.aggregated)
-ggsave('./GoogleDataProject/RatioInputs/ViolinRatios.svg',ratios_final)
-ggsave('./GoogleDataProject/RatioInputs/ViolinRatios.png',ratios_final)
+ggsave('./Figures/ViolinRatios.svg',ratios_final,width=15.1,height=11.5,units='in')
+ggsave('./Figures/ViolinRatios.png',ratios_final,width=15.1,height=11.5,units='in')
 
 plot(adoption.aggregated)
 
@@ -167,7 +188,7 @@ ratios.overtime.plot<- ggplot(ratios.overtime, aes(year, adopt.50)) +
 mylist <- list(task_size = quantile(cdata$task_size,p=c(.5)),date=1:(max(cdata$year)-min(cdata$year)+1),task_age=1:(max(cdata$year)-min(cdata$year)+1))
 creatRatio<-cbind(cdata$num_dataset_births,cdata$num_dataset_imports+cdata$num_dataset_births)
 
-creation_ratio_full<-glmmTMB(creatRatio ~ full_size+date*task_size*task_age+CV*date+NLP*date+cvmethods*date,data=cdata,family='binomial')
+creation_ratio_full<-glmmTMB(creatRatio ~ full_size+date*task_size*task_age+CV*date+NLP*date+Methods*date,data=cdata,family='binomial')
 plot(simulateResiduals(creation_ratio_full,refit=F))
 
 emmip(creation_ratio_full,NLP ~ date, at = mylist,CIs = T, type = 'response',plotit=T)
@@ -177,11 +198,11 @@ emmip(creation_ratio_full,NLP ~ date, at = mylist,CIs = T, type = 'response',plo
 
 real_quantiles=quantile(cdata$size,p=c(.25,.5,.75))
 
-creation.custom<-emmip(creation_ratio_full,NLP+CV+cvmethods ~ date, at = mylist,CIs = T, type = 'response',plotit=F)
-creation.custom<-creation.custom %>% filter(!(CV==1)) %>% filter(!(cvmethods==T)) 
+creation.custom<-emmip(creation_ratio_full,NLP+CV+Methods ~ date, at = mylist,CIs = T, type = 'response',plotit=F)
+creation.custom<-creation.custom %>% filter(!(CV==1)) %>% filter(!(Methods==T)) 
 creation.custom$NLP <- factor(creation.custom$NLP, levels=c(1,0))
 levels(creation.custom$NLP)<-c("NLP","Marginal")
-creation.custom$NLP %>% filter(NLP!="Marginal")
+creation.custom<-creation.custom %>% filter(!(NLP=="Marginal"))
 creation.custom.NLP <- ggplot(data=creation.custom, aes(x=date,y=yvar)) +
   scale_color_manual(values=c("orange","green"))+
   scale_fill_manual(values=c("orange","green"))+
@@ -195,8 +216,8 @@ creation.custom.NLP <- ggplot(data=creation.custom, aes(x=date,y=yvar)) +
   labs(title="Creation Ratio by Category (NLP)",x="Year", y="Creation Ratio\n(Higher= More Task-specific Datasets Adopted)", fill="PWC\nCategory")+
   guides(color = "none")
 
-creation.custom<-emmip(creation_ratio_full,CV+NLP+cvmethods ~ date, at = mylist,CIs = T, type = 'response',plotit=F)
-creation.custom<-creation.custom %>% filter(!(NLP==1)) %>% filter(!(cvmethods==T))
+creation.custom<-emmip(creation_ratio_full,CV+NLP+Methods ~ date, at = mylist,CIs = T, type = 'response',plotit=F)
+creation.custom<-creation.custom %>% filter(!(NLP==1)) %>% filter(!(Methods==T))
 creation.custom$CV <- factor(creation.custom$CV, levels=c(1,0))
 levels(creation.custom$CV)<-c("CV","Marginal")
 creation.custom<-creation.custom %>% filter(CV!='Marginal')
@@ -210,7 +231,7 @@ creation.custom.CV <- ggplot(data=creation.custom, aes(x=date,y=yvar, color=CV))
   theme(plot.title = element_text(hjust = 0.5),
         legend.position = c(1, 1), 
         legend.justification = c(1, 1))+
-  labs(title="Creation Ratio by Category (CV)",x="Year", y="Creation Ratio\n(Higher= More Task-specific Datasets Adopted)", fill="PWC\nCategory")+
+  labs(title="Creation Ratio by Category (CV)",x="Year", y="Creation Proportion\n(Higher= More Task-specific Datasets Adopted)", fill="PWC\nCategory")+
   guides(color = "none")
 
 creation.custom<-emmip(creation_ratio_full,CV+NLP+Methodology ~ date, at = mylist,CIs = T, type = 'response',plotit=F)
@@ -226,8 +247,10 @@ creation.custom.Methods <- ggplot(data=creation.custom, aes(x=date,y=yvar, color
   scale_y_continuous(limits=c(0,1),n.breaks=8)+
   theme(plot.title = element_text(hjust = 0.5),
         legend.position = c(1, 1), 
-        legend.justification = c(1, 1))+
-  labs(title="Diversity of Tasks by Category (Methods)",x="Year", y="Creation Ratio\n(Higher= More Task-specific Datasets Adopted)", fill="PWC\nCategory")+
+        legend.justification = c(1, 1),
+        legend.title = element_text(size=18),
+        legend.text = element_text(size=16))+
+  labs(title="Diversity of Tasks by Category (Methods)",x="Year", y="Creation Proportion\n(Higher= More Task-specific Datasets Adopted)", fill="PWC\nCategory")+
   guides(color = "none")
 
 
