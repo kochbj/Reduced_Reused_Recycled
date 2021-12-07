@@ -12,7 +12,7 @@ The Github is organized as follows:
 
 Most of the things you are looking for are in the "Data" folder. 
 
-**Dataset_Curation:** You'll find the main notebook to clean ad curate the data for the whole project "MainDataset.ipynb."
+**Dataset_Curation:** You'll find the main notebook to clean and curate the data for the whole project, "MainDataset.ipynb."
 
 **Dataset_Curation/Data:** You'll find four json files that correspond to the raw data from MAG and PWC. The PWC files are 06/16/21 downloads from [here](https://github.com/paperswithcode/paperswithcode-data). I will try and add some code to show how I got the MAG ID's for the papers in "datasets.json" but given that MAG is offline, I'm not sure it's that helpful.
 
