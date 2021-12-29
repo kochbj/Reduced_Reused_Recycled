@@ -20,4 +20,4 @@ Most of the things you are looking for are in the "Data" folder.
 
 **Dataset_Curation/Data/Analysis_Datasets:** The final datasets created by MainDataset.ipyb drawn on by the R scripts in the "Analysis" Folder are saved here.
 
-**Dataset_Curation/Data/Sensitivity_Datasets:**  Datasets created by MainDataset.ipyb drawn on by the R scripts in the "Analysis" Folder are saved here.
+**Dataset_Curation/Data/Sensitivity_Datasets:**  Sensitivity analysis datasets created by MainDataset.ipyb drawn on by the R scripts in the "Analysis" Folder are saved here.
